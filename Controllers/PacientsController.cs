@@ -15,15 +15,30 @@ namespace DentalApp.Controllers
         private readonly DentalAppContext _context;
 
         public PacientsController(DentalAppContext context)
+            {
+              _context = context;
+            }
+        //We check matches on First name or Last name
+        // Nume = Last name ; Prenume = First name
+        public async Task<IActionResult> Index(string searchString)
         {
-            _context = context;
+            var pacients = from p in _context.Pacient
+                         select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                pacients  = pacients.Where(s => s.Nume.StartsWith(searchString) || s.Prenume.StartsWith(searchString));
+            }
+
+            return View(await pacients.ToListAsync());
         }
 
         // GET: Pacients
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Pacient.ToListAsync());
-        }
+    //    public async Task<IActionResult> Index()
+     //   {
+      //      return View(await _context.Pacient.ToListAsync());
+     //
+    //}
 
         // GET: Pacients/Details/5
         public async Task<IActionResult> Details(int? id)
